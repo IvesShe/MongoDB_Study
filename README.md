@@ -474,6 +474,156 @@ db.numbers.insert(arr);
 # 練習2
 
 ```bash
+# 18.查詢numbers中num為500的文檔
+db.numbers.find({num:500});
 
+# 19.查詢numbers中的num大於5000的文檔
+db.numbers.find({num:{$gt:5000}});
+# 查詢numbers中的num大於等於5000的文檔
+db.numbers.find({num:{$gte:5000}});
+# 查詢numbers中的num等於5000的文檔
+db.numbers.find({num:{$eq:5000}});
+
+# 20.查詢numbers中num小於30的文檔
+db.numbers.find({num:{$lt:30}});
+
+# 21.查詢numbers中num大於40小於50的文檔
+db.numbers.find({num:{$gt:40,$lt:50}});
+
+# 22.查看numbers中num大於19996的文檔
+db.numbers.find({num:{$gt:19996}});
+
+# 23.查看numbers集合中的前10條數據
+db.numbers.find({num:{$lte:10}});
+
+# limit()設置顯示數據的上限
+db.numbers.find().limit(10);
+# 在開發時,絕對不會執行不帶條件的查詢
+db.numbers.find();
+
+# 24.查看numbers集合中的第11條到第20條數據
+# 分頁 每頁顯示10頁
+#       1-10
+#       11-20
+#       21-30
+#   skip()用於跳過指定數量的數據
+#   skip(頁碼-1*每頁顯示的條數).limit(每頁顯示的條數)
+#   MongoDB會自動調整skip和limit的位置
+db.numbers.find().limit(10);
+db.numbers.find().skip(10).limit(10);
+
+# 25.查看numbers集合中的第21條到第30條數據
+db.numbers.find().skip(20).limit(10);
+
+```
+
+# 文檔之間的關係
+
+- 一對一(one to one)
+    + 夫妻(一個丈夫對應一個妻子)
+    + 在MongoDB可以通過內嵌文檔的型式來體現出一對一的關係
+- 一對多(one to many) / 多對一(many to one)
+    + 父母 - 孩子
+    + 用戶 - 訂單
+    + 文章 - 評論
+    + 也可以透過內嵌文檔來映射一對多的關係
+- 多對多(many to many)
+    + 分類 - 商品
+    + 老師 - 學生
+
+```bash
+# 一對一
+db.wifeAndHusband.insert([
+    {
+        name:"黃蓉",
+        husband:{
+            name:"郭靖"
+        }
+    },
+    {
+        name:"潘金蓮",
+        husband:{
+            name:"武大郎"
+        }
+    },
+]);
+
+db.wifeAndHusband.find();
+```
+
+
+```bash
+# 一對多 用戶(users) 和 訂單(orders)
+db.users.insert([
+    {
+        name:"swk",
+    },
+    {
+        name:"zbj",
+    },
+]);
+
+db.users.find();
+
+# 給swk加入
+db.order.insert({
+    list:["蘋果","香蕉","大鴨梨"],
+    user_id:ObjectId("5f95477b23de37f83860bde5")
+});
+
+db.order.insert({
+    list:["西瓜","香蕉"],
+    user_id:ObjectId("5f95477b23de37f83860bde5")
+});
+
+db.order.find();
+
+# 給zbj加入
+db.order.insert({
+    list:["牛肉","漫畫"],
+    user_id:ObjectId("5f95477b23de37f83860bde6")
+});
+
+# 查找swk的訂單
+var user_id = db.users.findOne({name:"swk"})._id;
+
+db.order.find({user_id:user_id});
+
+# 查找zbj的訂單
+var user_id = db.users.findOne({name:"zbj"})._id;
+
+db.order.find({user_id:user_id});
+
+```
+
+```bash
+# 多對多
+db.teachers.insert([
+    {name:"洪七公"},
+    {name:"黃藥師"},
+    {name:"龜仙人"},
+])
+
+db.teachers.find();
+
+db.stus.insert([
+    {
+        name:"郭靖",
+        teach_ids:[
+            ObjectId("5f954a1f23de37f83860bdea"),
+            ObjectId("5f954a1f23de37f83860bdeb"),
+        ]
+    },
+    { 
+        name:"孫悟空",
+        teach_ids:[
+            ObjectId("5f954a1f23de37f83860bdea"),
+            ObjectId("5f954a1f23de37f83860bdeb"),
+            ObjectId("5f954a1f23de37f83860bdec"),
+        ]
+    },
+]);
+
+db.stus.find();
 
 ```
