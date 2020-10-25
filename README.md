@@ -627,3 +627,56 @@ db.stus.insert([
 db.stus.find();
 
 ```
+
+# 練習3
+
+引入dept.json及emp.json
+```bash
+# 26.將dept和emp集合導入到數據庫中
+db.dept.find();
+db.emp.find();
+
+# 27.查詢工資小於2000的員工
+db.emp.find({sal:{$lt:2000}});
+
+# 28.查詢工資在1000-2000之間的員工
+db.emp.find({sal:{$lt:2000,$gt:1000}});
+
+# 29.查詢工資小於1000或大於2000的員工
+db.emp.find({$or:[{sal:{$lt:2000,$gt:1000}}]});
+
+# 30.查詢財務部的所有員工
+# (depno)
+# db.dept.find({dname:"財務部"})[0].deptno;
+# db.dept.findOne({dname:"財務部"}).deptno;
+var depno = db.dept.findOne({dname:"財務部"}).deptno;
+db.emp.find({depno:depno});
+
+# 31.查詢銷售部的所有員工
+var depno = db.dept.findOne({dname:"銷售部"}).deptno;
+db.emp.find({depno:depno});
+
+# 32.查詢所有mgr為7698的所有員工
+db.emp.find({mgr:7698});
+
+# 33.為所有薪資低於1000的員工增加工資400元
+db.emp.updateMany({sal:{$lte:1000}},{$inc:{sal:400}});
+db.emp.find();
+```
+
+# sort和投影
+
+```bash
+
+# 查詢文檔時，默認情況是按照_id的值進行排列(升序)
+# sort()可以用來指定文檔排序的規則
+# sort()需要傳遞一個對象來指定排序規則，1表示升序、-1表示降序
+# limit skip sort 可以以任意的順序進行調用
+db.emp.find({}).sort({sal:1});
+db.emp.find({}).sort({sal:-1});
+db.emp.find({}).sort({sal:-1,empno:-1});
+
+# 在查詢時，可以在第二個參數的位置來設置查詢結果的投影
+db.emp.find({},{ename:1,_id:0,sal:1});
+
+```
